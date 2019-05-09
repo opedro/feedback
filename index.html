@@ -1,0 +1,83 @@
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container" id="tabela">
+        <div class="row mb-3">
+            <div class="col-4 themed-grid-col">Nome</div>
+            <div class="col-4 themed-grid-col">Data</div>
+            <div class="col-4 themed-grid-col">Notas</div>
+        </div>
+    </div>
+
+    <form>
+        <div class="row">
+            <div class="col-md-4"><input id="nome"  type="text"></div>
+            <div class="col-md-4"><input id="data" type="date"></div>
+            <div class="col-md-4"> <input id="notas" type="text"></div>
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" type="button" id='add'>Salvar</button>
+        </div>
+
+    </form>
+</body>
+<script>
+    $(function () {
+        loadButton();
+        DB = loadDB();
+        if (DB) {
+            DB.forEach(item => {
+                var dev = localStorage.getItem(item);
+                dev = JSON.parse(dev);
+                $('.container#tabela').append('<div class="row mb-3"><div class="col-4 themed-grid-col">' + dev.nome + "</div>" +
+                    '<div class="col-4 themed-grid-col">' + dev.data + '</div>' +
+                    '<div class="col-4 themed-grid-col">' + dev.notas + '</div>' +
+                    '</div>');
+            });
+        }
+        function loadDB() {
+            let db = localStorage.getItem('db');
+            if (db) {
+                return JSON.parse(db);
+            } else {
+                db = localStorage.setItem('db', '[]')
+                return JSON.parse(db);
+            }
+
+        }
+
+        function loadButton() {
+
+            $('#add').on('click', () => {
+                var nome = $('#nome').val();
+                var data = $('#data').val();
+                var notas = $('#notas').val();
+
+                let registro = '{"nome":"' + nome + '", "data":"' + data + '", "notas":"' + notas + '"}';
+                localStorage.setItem(nome, registro);
+                if (DB) {
+                    var check = false;
+                    for (i = 0; i < DB.length; i++) {
+                        if (DB[i] == nome) {
+                            check = true;
+                        }
+                    }
+                }
+                if (!check)
+                    DB.push(nome);
+                let tempdb = JSON.stringify(DB);
+                localStorage.setItem('db', tempdb);
+                location.reload();
+            })
+        }
+
+
+    });
+</script>
+
+</html>
